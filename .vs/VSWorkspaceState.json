@@ -1,0 +1,18 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\output",
+    "\\output\\data",
+    "\\output\\gen",
+    "\\src",
+    "\\src\\TableTool.Cli",
+    "\\src\\TableTool.Cli\\Model",
+    "\\src\\TableTool.Cli\\obj",
+    "\\src\\TableTool.Runtime",
+    "\\src\\TableTool.Runtime\\obj",
+    "\\src\\TableTool.Runtime\\obj\\Debug",
+    "\\src\\TableTool.Runtime\\obj\\Debug\\net8.0"
+  ],
+  "SelectedNode": "\\output\\gen\\ItemTable.cs",
+  "PreviewInSolutionExplorer": false
+}

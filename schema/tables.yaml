@@ -1,0 +1,124 @@
+# ============================================================
+# schema/tables.yaml — TableTool Sample Schema
+# ============================================================
+
+# 自定义类型定义 (可选)
+custom_types:
+  - name: DateTime
+    storage: string
+    csharp: System.DateTime
+    parse: System.DateTime.Parse({0}, System.Globalization.CultureInfo.InvariantCulture)
+    import:
+      - System
+
+enums:
+  - name: ElementType
+    values:
+      None: 0
+      Fire: 1
+      Water: 2
+      Wind: 3
+      Earth: 4
+
+tables:
+
+  # ─── Single PK table ───────────────────────────────────
+  - name: ItemCategory
+    description: "Item category definitions"
+    file: ItemCategory.xlsx
+    sheet: Sheet1
+    primary_key: Id
+    fields:
+      - name: Id
+        type: int
+        comment: "Category unique ID"
+      - name: Name
+        type: string
+        comment: "Category name"
+      - name: Icon
+        type: string
+        comment: "Icon file name"
+
+  # ─── Single PK with FK reference ───────────────────────
+  - name: Item
+    description: "Item master data"
+    file: Item.xlsx
+    sheet: Sheet1
+    primary_key: Id
+    fields:
+      - name: Id
+        type: int
+        comment: "Item unique ID"
+      - name: Name
+        type: string
+        comment: "Display name"
+      - name: Price
+        type: int
+        comment: "Buy price in gold"
+      - name: Category
+        type: int
+        ref: ItemCategory.Id
+        comment: "Item category ID (FK → ItemCategory.Id)"
+      - name: Tags
+        type: list<string>
+        comment: "Search tags"
+      - name: Attributes
+        type: map<string,int>
+        comment: "Attribute bonuses (e.g. atk:10, def:5)"
+      - name: CreateTime
+        type: DateTime
+        comment: "创建时间 (自定义类型示例)"
+
+  # ─── Composite PK table ────────────────────────────────
+  - name: Skill
+    description: "Skill definitions with level variants"
+    file: Skill.xlsx
+    sheet: Sheet1
+    primary_key: [Id, Level]
+    fields:
+      - name: Id
+        type: int
+        comment: "Skill ID"
+      - name: Level
+        type: int
+        comment: "Skill level"
+      - name: Name
+        type: string
+        comment: "Skill display name"
+      - name: Description
+        type: string
+        comment: "Skill description"
+      - name: Cost
+        type: float
+        comment: "MP cost"
+      - name: Element
+        type: ElementType
+        comment: "Element type (enum)"
+
+  # ─── Table with inline struct ──────────────────────────
+  - name: Reward
+    description: "Reward definitions"
+    file: Reward.xlsx
+    sheet: Sheet1
+    primary_key: Id
+    fields:
+      - name: Id
+        type: int
+        comment: "Reward ID"
+      - name: Description
+        type: string
+        comment: "Reward description"
+      - name: Items
+        type: struct
+        struct:
+          - name: ItemId
+            type: int
+            ref: Item.Id
+            comment: "Item ID (FK → Item.Id)"
+          - name: Count
+            type: int
+            comment: "Item count"
+          - name: Rate
+            type: float
+            comment: "Drop rate"
+        comment: "List of reward items"

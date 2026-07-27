@@ -1,0 +1,71 @@
+{
+  "keyColumn": "Id",
+  "primaryKeyType": "int",
+  "records": {
+    "1001": {
+      "Id": 1001,
+      "Name": "Iron Sword",
+      "Price": 500,
+      "Category": 1,
+      "Tags": [
+        "weapon",
+        "sword",
+        "starter"
+      ],
+      "Attributes": {
+        "atk": 10,
+        "spd": -1
+      }
+    },
+    "1002": {
+      "Id": 1002,
+      "Name": "Steel Shield",
+      "Price": 800,
+      "Category": 2,
+      "Tags": [
+        "armor",
+        "shield"
+      ],
+      "Attributes": {
+        "def": 15
+      }
+    },
+    "1003": {
+      "Id": 1003,
+      "Name": "Health Potion",
+      "Price": 50,
+      "Category": 3,
+      "Tags": [
+        "potion",
+        "consumable"
+      ],
+      "Attributes": {
+        "hp": 50
+      }
+    },
+    "1004": {
+      "Id": 1004,
+      "Name": "Mana Potion",
+      "Price": 60,
+      "Category": 3,
+      "Tags": [
+        "potion",
+        "consumable"
+      ],
+      "Attributes": {
+        "mp": 30
+      }
+    },
+    "2001": {
+      "Id": 2001,
+      "Name": "Dragon Scale",
+      "Price": 5000,
+      "Category": 4,
+      "Tags": [
+        "rare",
+        "material"
+      ],
+      "Attributes": {}
+    }
+  }
+}

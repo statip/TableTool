@@ -1,0 +1,57 @@
+{
+  "keyColumn": [
+    "Id",
+    "Level"
+  ],
+  "primaryKeyType": "int|int",
+  "records": {
+    "101|1": {
+      "Id": 101,
+      "Level": 1,
+      "Name": "Fire Bolt",
+      "Description": "Launches a small fireball",
+      "Cost": 10,
+      "Element": "Fire"
+    },
+    "101|2": {
+      "Id": 101,
+      "Level": 2,
+      "Name": "Fire Blast",
+      "Description": "Launches a powerful fireball",
+      "Cost": 20,
+      "Element": "Fire"
+    },
+    "101|3": {
+      "Id": 101,
+      "Level": 3,
+      "Name": "Inferno",
+      "Description": "Engulfs the target in hellfire",
+      "Cost": 35,
+      "Element": "Fire"
+    },
+    "102|1": {
+      "Id": 102,
+      "Level": 1,
+      "Name": "Heal",
+      "Description": "Restores a small amount of HP",
+      "Cost": 15,
+      "Element": "None"
+    },
+    "102|2": {
+      "Id": 102,
+      "Level": 2,
+      "Name": "Cure",
+      "Description": "Restores a moderate amount of HP",
+      "Cost": 25,
+      "Element": "None"
+    },
+    "103|1": {
+      "Id": 103,
+      "Level": 1,
+      "Name": "Ice Shard",
+      "Description": "Hurls a shard of ice",
+      "Cost": 12,
+      "Element": "Water"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+C:\Project\TableTool\src\TableTool.Runtime\bin\Debug\net8.0\TableTool.Runtime.deps.json
+C:\Project\TableTool\src\TableTool.Runtime\bin\Debug\net8.0\TableTool.Runtime.dll
+C:\Project\TableTool\src\TableTool.Runtime\bin\Debug\net8.0\TableTool.Runtime.pdb
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.GeneratedMSBuildEditorConfig.editorconfig
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.AssemblyInfoInputs.cache
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.AssemblyInfo.cs
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.csproj.CoreCompileInputs.cache
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.dll
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\refint\TableTool.Runtime.dll
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.pdb
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\ref\TableTool.Runtime.dll

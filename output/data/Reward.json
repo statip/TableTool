@@ -1,0 +1,29 @@
+{
+  "keyColumn": "Id",
+  "primaryKeyType": "int",
+  "records": {
+    "1": {
+      "Id": 1,
+      "Description": "Starter Pack",
+      "Items": [
+        null,
+        null
+      ]
+    },
+    "2": {
+      "Id": 2,
+      "Description": "Dragon Hunter Reward",
+      "Items": [
+        null,
+        null
+      ]
+    },
+    "3": {
+      "Id": 3,
+      "Description": "Daily Login Bonus",
+      "Items": [
+        null
+      ]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "keyColumn": "Id",
+  "primaryKeyType": "int",
+  "records": {
+    "1": {
+      "Id": 1,
+      "Name": "Weapon",
+      "Icon": "icon_weapon.png"
+    },
+    "2": {
+      "Id": 2,
+      "Name": "Armor",
+      "Icon": "icon_armor.png"
+    },
+    "3": {
+      "Id": 3,
+      "Name": "Potion",
+      "Icon": "icon_potion.png"
+    },
+    "4": {
+      "Id": 4,
+      "Name": "Material",
+      "Icon": "icon_material.png"
+    }
+  }
+}

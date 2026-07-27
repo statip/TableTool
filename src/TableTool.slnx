@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="TableTool.Cli/TableTool.Cli.csproj" />
+  <Project Path="TableTool.Runtime/TableTool.Runtime.csproj" />
+</Solution>
