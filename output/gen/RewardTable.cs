@@ -37,7 +37,7 @@ namespace GameConfig
 
         /// <summary>List of reward items</summary>
         [JsonInclude]
-        public ItemsStruct Items { get; private set; } = null!;
+        public List<ItemsStruct> Items { get; private set; } = new();
 
     }
 

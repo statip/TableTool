@@ -234,8 +234,12 @@ public sealed class CSharpClassGenerator
 
     private static string GetCSharpType(FieldDefinition field, Dictionary<string, List<FieldDefinition>> structNames)
     {
+        // Direct struct
         if (field.ParsedStructType != null && field.ParsedStructType.StructFields != null)
         {
+            // If wrapped in List (list<struct>), use List<StructName>
+            if (field.ParsedType?.Kind == FieldTypeKind.List && field.ParsedType.ElementType?.Kind == FieldTypeKind.Struct)
+                return $"List<{GetStructClassName(field.Name)}>";
             return GetStructClassName(field.Name);
         }
 
@@ -264,10 +268,11 @@ public sealed class CSharpClassGenerator
 
     private static string GetDefaultValue(FieldDefinition field)
     {
+        if (field.ParsedType?.Kind == FieldTypeKind.List)
+            return "new()";
+
         if (field.ParsedStructType != null && field.ParsedStructType.StructFields != null)
-        {
             return "null!";
-        }
 
         if (field.ParsedType == null) return "default!";
 

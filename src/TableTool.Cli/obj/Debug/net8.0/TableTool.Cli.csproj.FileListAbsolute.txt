@@ -24,3 +24,4 @@ C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\refint\TableTool.Cli.dll
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.pdb
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.genruntimeconfig.cache
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\ref\TableTool.Cli.dll
+C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.sourcelink.json

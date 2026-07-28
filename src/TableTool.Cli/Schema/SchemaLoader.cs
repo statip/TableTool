@@ -73,8 +73,14 @@ public sealed class SchemaLoader
                                 sf.ParsedType = FieldType.Parse(sf.Type, enums, customTypes);
                                 structFields.Add(sf);
                             }
-                            field.ParsedStructType = FieldType.Struct(structFields);
-                            field.ParsedType = FieldType.Struct(structFields);
+                            var structType = FieldType.Struct(structFields);
+                            field.ParsedStructType = structType;
+
+                            // If type is list<struct> (e.g. Excel type row says so), wrap in List
+                            if (field.Type.Trim().StartsWith("list<", StringComparison.OrdinalIgnoreCase))
+                                field.ParsedType = FieldType.List(structType);
+                            else
+                                field.ParsedType = structType;
                         }
                         else
                         {

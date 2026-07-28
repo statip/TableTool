@@ -65,9 +65,6 @@ tables:
       - name: Attributes
         type: map<string,int>
         comment: "Attribute bonuses (e.g. atk:10, def:5)"
-      - name: CreateTime
-        type: DateTime
-        comment: "创建时间 (自定义类型示例)"
 
   # ─── Composite PK table ────────────────────────────────
   - name: Skill
@@ -109,7 +106,7 @@ tables:
         type: string
         comment: "Reward description"
       - name: Items
-        type: struct
+        type: list<struct>
         struct:
           - name: ItemId
             type: int

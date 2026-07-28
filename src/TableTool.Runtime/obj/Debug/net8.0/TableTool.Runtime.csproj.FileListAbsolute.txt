@@ -9,3 +9,4 @@ C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.dl
 C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\refint\TableTool.Runtime.dll
 C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.pdb
 C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\ref\TableTool.Runtime.dll
+C:\Project\TableTool\src\TableTool.Runtime\obj\Debug\net8.0\TableTool.Runtime.sourcelink.json

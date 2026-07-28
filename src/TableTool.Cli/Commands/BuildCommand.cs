@@ -99,7 +99,9 @@ public sealed class BuildCommand
 
         if (hasParseErrors)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("\nBuild FAILED due to parse errors.");
+            Console.ResetColor();
             return 1;
         }
 
@@ -110,20 +112,14 @@ public sealed class BuildCommand
 
         if (!validationResult.IsValid)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"FAILED ({validationResult.Errors.Count} errors)");
             foreach (var error in validationResult.Errors)
             {
                 var prefix = error.Severity == ErrorSeverity.Error ? "ERROR" : "WARN";
                 Console.Error.WriteLine($"  [{prefix}] {error}");
             }
-
-            // Write validation log
-            var outputDataDir = Path.Combine(_outputDir, _dataDir);
-            Directory.CreateDirectory(outputDataDir);
-            var logPath = Path.Combine(outputDataDir, "..", "validation.log");
-            File.WriteAllLines(logPath, validationResult.Errors.Select(e => e.ToString()));
-            Console.WriteLine($"\nValidation log written to: {logPath}");
-
+            Console.ResetColor();
             return 1;
         }
         Console.WriteLine("  All validations passed.");

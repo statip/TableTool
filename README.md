@@ -213,6 +213,62 @@ public sealed class ItemRecord {
 }
 ```
 
+### 配置格式一览
+
+| 属性 | 必填 | 说明 |
+|------|------|------|
+| `name` | ✅ | 类型名，Excel/YAML 字段里用这个 |
+| `storage` | ✅ | Excel 和 JSON 里存的底层类型：`string`/`int`/`long`/`float` |
+| `csharp` | ✅ | C# 要转换成的完整类型名，如 `System.DateTime` |
+| `parse` | ❌ | 解析表达式，`{0}` 代表原始值，默认调 `类型名.Parse` |
+| `import` | ❌ | 需要 `using` 的命名空间 |
+
+### 常用自定义类型例子
+
+```yaml
+custom_types:
+  # 时间
+  - name: DateTime
+    storage: string
+    csharp: System.DateTime
+    parse: System.DateTime.Parse({0}, System.Globalization.CultureInfo.InvariantCulture)
+    import: [System]
+
+  # 时间戳 (long → DateTime)
+  - name: UnixTime
+    storage: long
+    csharp: System.DateTime
+    parse: System.DateTimeOffset.FromUnixTimeSeconds({0}).DateTime
+    import: [System]
+
+  # 二维向量
+  - name: Vector2
+    storage: string
+    csharp: System.Numerics.Vector2
+    parse: System.Numerics.Vector2.Parse({0})
+    import: [System.Numerics]
+
+  # Unity 三维向量
+  - name: Vector3
+    storage: string
+    csharp: UnityEngine.Vector3
+    parse: UnityEngine.Vector3.Parse({0})
+    import: [UnityEngine]
+
+  # 布尔值存成 int (0/1)
+  - name: BoolInt
+    storage: int
+    csharp: bool
+    parse: {0} != 0
+
+  # 颜色
+  - name: Color
+    storage: string
+    csharp: UnityEngine.Color
+    parse: ParseColor({0})
+    import: [UnityEngine]
+```
+
 ---
 
 ## 7. 构建命令
