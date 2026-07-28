@@ -92,7 +92,7 @@ tables:
         type: ElementType
         comment: "Element type (enum)"
 
-  # ─── Table with inline struct ──────────────────────────
+  # ─── Table with standalone struct reference ──────────
   - name: Reward
     description: "Reward definitions"
     file: Reward.xlsx
@@ -106,16 +106,34 @@ tables:
         type: string
         comment: "Reward description"
       - name: Items
-        type: list<struct>
-        struct:
-          - name: ItemId
-            type: int
-            ref: Item.Id
-            comment: "Item ID (FK → Item.Id)"
-          - name: Count
-            type: int
-            comment: "Item count"
-          - name: Rate
-            type: float
-            comment: "Drop rate"
-        comment: "List of reward items"
+        type: list<RewardItem>
+        comment: "List of reward items (refers to standalone struct RewardItem)"
+
+# ============================================================
+# 独立类型定义 (类型公民, 可以在多张表里引用)
+# ============================================================
+
+structs:
+  - name: RewardItem
+    generate_code: true               # 让工具生成 C# 类
+    fields:
+      - name: ItemId
+        type: int
+        ref: Item.Id
+        comment: "Item ID (FK → Item.Id)"
+      - name: Count
+        type: int
+        comment: "Item count"
+      - name: Rate
+        type: float
+        comment: "Drop rate"
+
+extern_types:
+  - name: MyCustomDrop
+    generate_code: false              # 不生成 C# 类，你自己写
+    fields:
+      - name: ItemId
+        type: int
+        ref: Item.Id
+      - name: Rate
+        type: float

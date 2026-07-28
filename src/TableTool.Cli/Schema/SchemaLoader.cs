@@ -33,6 +33,33 @@ public sealed class SchemaLoader
             var errors = new List<string>();
             var enums = doc.Enums ?? new();
             var customTypes = doc.CustomTypes ?? new();
+            var allStructs = doc.AllStructs;
+
+            // Parse standalone struct definitions first
+            foreach (var st in allStructs)
+            {
+                if (string.IsNullOrWhiteSpace(st.Name))
+                {
+                    errors.Add("Struct/extern_type missing 'name' field.");
+                    continue;
+                }
+                foreach (var sf in st.Fields)
+                {
+                    if (string.IsNullOrWhiteSpace(sf.Name))
+                    {
+                        errors.Add($"Struct '{st.Name}' field missing 'name'.");
+                        continue;
+                    }
+                    try
+                    {
+                        sf.ParsedType = FieldType.Parse(sf.Type, enums, customTypes, allStructs);
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add($"Struct '{st.Name}', field '{sf.Name}': {ex.Message}");
+                    }
+                }
+            }
 
             // Parse field types for each table
             foreach (var table in doc.Tables)
@@ -70,7 +97,7 @@ public sealed class SchemaLoader
                                     errors.Add($"Table '{table.Name}'.{field.Name} struct field missing 'name'.");
                                     continue;
                                 }
-                                sf.ParsedType = FieldType.Parse(sf.Type, enums, customTypes);
+                                sf.ParsedType = FieldType.Parse(sf.Type, enums, customTypes, allStructs);
                                 structFields.Add(sf);
                             }
                             var structType = FieldType.Struct(structFields);
@@ -84,7 +111,7 @@ public sealed class SchemaLoader
                         }
                         else
                         {
-                            field.ParsedType = FieldType.Parse(field.Type, enums, customTypes);
+                            field.ParsedType = FieldType.Parse(field.Type, enums, customTypes, allStructs);
                         }
                     }
                     catch (Exception ex)

@@ -1,8 +1,3 @@
-C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.csproj.AssemblyReference.cache
-C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.GeneratedMSBuildEditorConfig.editorconfig
-C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.AssemblyInfoInputs.cache
-C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.AssemblyInfo.cs
-C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.csproj.CoreCompileInputs.cache
 C:\Project\TableTool\src\TableTool.Cli\bin\Debug\net8.0\TableTool.Cli.exe
 C:\Project\TableTool\src\TableTool.Cli\bin\Debug\net8.0\TableTool.Cli.deps.json
 C:\Project\TableTool\src\TableTool.Cli\bin\Debug\net8.0\TableTool.Cli.runtimeconfig.json
@@ -18,10 +13,15 @@ C:\Project\TableTool\src\TableTool.Cli\bin\Debug\net8.0\XLParser.dll
 C:\Project\TableTool\src\TableTool.Cli\bin\Debug\net8.0\YamlDotNet.dll
 C:\Project\TableTool\src\TableTool.Cli\bin\Debug\net8.0\TableTool.Runtime.dll
 C:\Project\TableTool\src\TableTool.Cli\bin\Debug\net8.0\TableTool.Runtime.pdb
+C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.csproj.AssemblyReference.cache
+C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.GeneratedMSBuildEditorConfig.editorconfig
+C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.AssemblyInfoInputs.cache
+C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.AssemblyInfo.cs
+C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.csproj.CoreCompileInputs.cache
+C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.sourcelink.json
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableToo.3135D37B.Up2Date
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.dll
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\refint\TableTool.Cli.dll
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.pdb
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.genruntimeconfig.cache
 C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\ref\TableTool.Cli.dll
-C:\Project\TableTool\src\TableTool.Cli\obj\Debug\net8.0\TableTool.Cli.sourcelink.json

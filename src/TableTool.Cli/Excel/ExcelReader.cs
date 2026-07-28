@@ -10,7 +10,7 @@ public sealed class ExcelReader
 {
     /// <summary>Read an Excel file for a given table definition.</summary>
     public ExcelReadResult ReadTable(TableDefinition tableDef, string excelDirectory, List<EnumDefinition> enums,
-        List<CustomTypeDefinition>? customTypes = null)
+        List<CustomTypeDefinition>? customTypes = null, List<StructDefinition>? structs = null)
     {
         var filePath = Path.Combine(excelDirectory, tableDef.File);
         if (!File.Exists(filePath))
@@ -34,7 +34,7 @@ public sealed class ExcelReader
             if (worksheet == null)
                 return ExcelReadResult.Fail($"No worksheet found in {filePath}.");
 
-            return ReadWorksheet(worksheet, tableDef, enums, customTypes);
+            return ReadWorksheet(worksheet, tableDef, enums, customTypes, structs);
         }
         catch (Exception ex)
         {
@@ -80,7 +80,7 @@ public sealed class ExcelReader
     }
 
     private ExcelReadResult ReadWorksheet(IXLWorksheet worksheet, TableDefinition tableDef, List<EnumDefinition> enums,
-        List<CustomTypeDefinition>? customTypes = null)
+        List<CustomTypeDefinition>? customTypes = null, List<StructDefinition>? structs = null)
     {
         var errors = new List<string>();
         var warnings = new List<string>();
@@ -165,7 +165,7 @@ public sealed class ExcelReader
 
                 try
                 {
-                    var parsedType = FieldType.Parse(typeStr, enums, customTypes);
+                    var parsedType = FieldType.Parse(typeStr, enums, customTypes, structs);
                     typeOverrides[info.FieldName] = parsedType;
 
                     // Validate type against schema

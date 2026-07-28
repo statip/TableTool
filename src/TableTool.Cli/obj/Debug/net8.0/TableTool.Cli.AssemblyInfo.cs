@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TableTool.Cli")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5f6e51ac934a01ce34ab7e9ae2732e9199abec73")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+36d96ddd82b72a4f5efb69bee085a769341d6f62")]
 [assembly: System.Reflection.AssemblyProductAttribute("TableTool.Cli")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TableTool.Cli")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

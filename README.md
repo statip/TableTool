@@ -135,39 +135,51 @@ custom_types:
     parse: System.DateTime.Parse({0}, System.Globalization.CultureInfo.InvariantCulture)
     import: [System]
 
+# 独立类型 (类型公民)
+structs:
+  - name: RewardItem
+    generate_code: true               # 生成 C# 类
+    fields:
+      - name: ItemId;  type: int;     ref: Item.Id
+      - name: Count;   type: int
+      - name: Rate;    type: float
+
+extern_types:
+  - name: MyExternal
+    generate_code: false              # 不生成，用你自己写的类
+    fields:
+      - name: ItemId;  type: int;  ref: Item.Id
+
 tables:
   - name: Item
     file: Item.xlsx
     sheet: Sheet1
     primary_key: Id
     fields:
-      - name: Id
-        type: int
-        comment: "物品唯一ID"
-      - name: Name
-        type: string
-      - name: Price
-        type: int
-      - name: Category
-        type: int
-        ref: ItemCategory.Id         # 外键
-      - name: Tags
-        type: list<string>
-      - name: Attrs
-        type: map<string,int>
-      - name: CreateTime
-        type: DateTime               # 自定义类型
+      - name: Id;           type: int;          comment: "物品ID"
+      - name: Name;         type: string
+      - name: Price;        type: int
+      - name: Category;     type: int;          ref: ItemCategory.Id
+      - name: Tags;         type: list<string>
+      - name: Attrs;        type: map<string,int>
+      - name: CreateTime;   type: DateTime
 
   - name: Skill
     file: Skill.xlsx
-    primary_key: [Id, Level]         # 复合主键
+    primary_key: [Id, Level]
     fields:
-      - name: Id
-        type: int
-      - name: Level
-        type: int
-      - name: Element
-        type: ElementType            # 枚举
+      - name: Id;       type: int
+      - name: Level;    type: int
+      - name: Element;  type: ElementType
+
+  - name: Reward
+    file: Reward.xlsx
+    primary_key: Id
+    fields:
+      - name: Id;           type: int
+      - name: Description;  type: string
+      - name: Items;        type: list<RewardItem>     # ← 引用独立类型
+```
 ```
 
 ---
@@ -194,6 +206,40 @@ fields:
   - name: CreateTime
     type: DateTime    # ← 直接用自定义类型名
 ```
+
+### 独立类型 (structs)
+
+类型独立于表，可以在多张表里引用。每一行是一个"类型公民"。
+
+```yaml
+structs:
+  - name: RewardItem
+    generate_code: true          # true=生成C#类, false=不生成你用自己写的
+    fields:
+      - name: ItemId
+        type: int
+        ref: Item.Id             # FK 校验照做
+      - name: Count
+        type: int
+
+  - name: MyExternalDrop
+    generate_code: false         # 不生成代码，你自己写 C# 类
+    fields:
+      - name: ItemId
+        type: int
+        ref: Item.Id
+
+# 表里引用
+tables:
+  - name: Reward
+    fields:
+      - name: Items
+        type: list<RewardItem>   # ← 引用独立类型
+```
+
+- `structs` → 工具生成 C# 类，表里随便引用
+- `extern_types` → 只校验不生成，你自己写类
+- 删表不影响 struct 定义，反过来 struct 也能被多张表共用
 
 ### 生成的 C#
 
@@ -305,6 +351,8 @@ pause
 | `--data, -d` | `data` | JSON 子目录 |
 | `--gen, -g` | `gen` | C# 子目录 |
 | `--namespace, -n` | `GameConfig` | C# 命名空间 |
+
+> 每次构建前会自动清空 `output/` 下的旧文件，删表后旧代码和旧 JSON 不会残留。
 
 ---
 

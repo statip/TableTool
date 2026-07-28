@@ -1,4 +1,5 @@
 using TableTool.Cli.Model;
+using TableTool.Cli.Schema.Models;
 
 namespace TableTool.Cli.Validation;
 
@@ -12,11 +13,17 @@ public sealed class SchemaValidator
     /// <summary>Run all validations on the data model.</summary>
     public ValidationResult Validate(DataModel model)
     {
+        return Validate(model, null);
+    }
+
+    /// <summary>Run all validations, including FK refs inside standalone structs.</summary>
+    public ValidationResult Validate(DataModel model, List<StructDefinition>? structs)
+    {
         var allErrors = new List<ValidationError>();
 
         allErrors.AddRange(_typeValidator.Validate(model));
         allErrors.AddRange(_pkValidator.Validate(model));
-        allErrors.AddRange(_fkValidator.Validate(model));
+        allErrors.AddRange(_fkValidator.Validate(model, structs));
 
         return new ValidationResult(allErrors);
     }

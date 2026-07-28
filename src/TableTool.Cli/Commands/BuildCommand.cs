@@ -69,7 +69,7 @@ public sealed class BuildCommand
         {
             Console.Write($"  {tableDef.Name} ({tableDef.File})... ");
             var result = reader.ReadTable(tableDef, _excelDir, schemaResult.Enums,
-                schemaResult.Document.CustomTypes);
+                schemaResult.Document.CustomTypes, schemaResult.Document.AllStructs);
 
             if (!result.Success)
             {
@@ -108,7 +108,7 @@ public sealed class BuildCommand
         // Step 3: Validate
         Console.WriteLine("\nValidating data...");
         var validator = new SchemaValidator();
-        var validationResult = validator.Validate(dataModel);
+        var validationResult = validator.Validate(dataModel, schemaResult.Document.AllStructs);
 
         if (!validationResult.IsValid)
         {
@@ -124,10 +124,17 @@ public sealed class BuildCommand
         }
         Console.WriteLine("  All validations passed.");
 
+        // Clean output directories
+        var outputDataPath = Path.Combine(_outputDir, _dataDir);
+        var outputGenPath = Path.Combine(_outputDir, _genDir);
+        if (Directory.Exists(outputDataPath)) Directory.Delete(outputDataPath, true);
+        if (Directory.Exists(outputGenPath)) Directory.Delete(outputGenPath, true);
+        Directory.CreateDirectory(outputDataPath);
+        Directory.CreateDirectory(outputGenPath);
+
         // Step 4: Export JSON
         Console.WriteLine("\nExporting JSON...");
         var exporter = new JsonExporter();
-        var outputDataPath = Path.Combine(_outputDir, _dataDir);
         var exportResult = exporter.Export(dataModel, outputDataPath);
 
         if (!exportResult.Success)
@@ -147,9 +154,6 @@ public sealed class BuildCommand
 
         // Step 5: Generate C# code
         Console.WriteLine("\nGenerating C# code...");
-        var outputGenPath = Path.Combine(_outputDir, _genDir);
-        Directory.CreateDirectory(outputGenPath);
-
         var classGenerator = new CSharpClassGenerator(_namespace);
         var tablesGenerator = new TablesGenerator(_namespace);
         int genFileCount = 0;
@@ -172,6 +176,21 @@ public sealed class BuildCommand
         File.WriteAllText(tablesFilePath, tablesCode);
         genFileCount++;
         Console.WriteLine("  Tables.cs");
+
+        // Generate standalone struct files (only if generate_code: true)
+        var structsToGen = (schemaResult.Document.Structs ?? new())
+            .Where(s => s.GenerateCode).ToList();
+        foreach (var st in structsToGen)
+        {
+            var code = classGenerator.GenerateStruct(st, _namespace);
+            var fileName = $"{st.Name}.cs";
+            var filePath = Path.Combine(outputGenPath, fileName);
+            File.WriteAllText(filePath, code);
+            genFileCount++;
+            Console.WriteLine($"  {fileName}");
+        }
+        if (structsToGen.Count > 0)
+            Console.WriteLine($"  ({structsToGen.Count} standalone structs)");
 
         sw.Stop();
         Console.WriteLine(new string('-', 60));

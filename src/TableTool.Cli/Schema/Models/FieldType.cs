@@ -26,6 +26,8 @@ public sealed class FieldType
     public List<FieldDefinition>? StructFields { get; private set; } // For inline struct
     public string? CustomTypeName { get; private set; }       // For Custom type (alias)
     public CustomTypeDefinition? CustomDefinition { get; set; } // Full custom type definition
+    public string? StructName { get; private set; }           // For standalone struct type
+    public StructDefinition? StructDefinition { get; set; }   // Struct definition reference
 
     private FieldType(FieldTypeKind kind)
     {
@@ -51,6 +53,9 @@ public sealed class FieldType
     public static FieldType Custom(string name, CustomTypeDefinition def) =>
         new(FieldTypeKind.Custom) { CustomTypeName = name, CustomDefinition = def };
 
+    public static FieldType StructRef(string name, StructDefinition def) =>
+        new(FieldTypeKind.Struct) { StructName = name, StructDefinition = def, StructFields = def.Fields };
+
     /// <summary>Underlying storage FieldType (for Custom types).</summary>
     public FieldType? StorageType
     {
@@ -63,7 +68,7 @@ public sealed class FieldType
 
     /// <summary>Parse a type string like "int", "list&lt;string&gt;", "map&lt;string,int&gt;", "ElementType" (enum), "DateTime" (custom).</summary>
     public static FieldType Parse(string typeStr, List<EnumDefinition>? enums = null,
-        List<CustomTypeDefinition>? customTypes = null)
+        List<CustomTypeDefinition>? customTypes = null, List<StructDefinition>? structs = null)
     {
         var trimmed = typeStr.Trim();
         if (string.IsNullOrEmpty(trimmed))
@@ -73,7 +78,7 @@ public sealed class FieldType
         if (trimmed.StartsWith("list<", StringComparison.OrdinalIgnoreCase) && trimmed.EndsWith(">"))
         {
             var inner = trimmed.Substring(5, trimmed.Length - 6);
-            return List(Parse(inner, enums, customTypes));
+            return List(Parse(inner, enums, customTypes, structs));
         }
 
         // Check for map<K,V>
@@ -85,7 +90,7 @@ public sealed class FieldType
                 throw new ArgumentException($"Invalid map type: '{typeStr}'. Expected format: map<K,V>");
             var keyTypeStr = inner.Substring(0, commaIdx).Trim();
             var valTypeStr = inner.Substring(commaIdx + 1).Trim();
-            return Map(Parse(keyTypeStr, enums, customTypes), Parse(valTypeStr, enums, customTypes));
+            return Map(Parse(keyTypeStr, enums, customTypes, structs), Parse(valTypeStr, enums, customTypes, structs));
         }
 
         // Check known primitives
@@ -112,6 +117,10 @@ public sealed class FieldType
         var customResult = TryParseCustom(trimmed, customTypes);
         if (customResult != null) return customResult;
 
+        // Check standalone structs
+        var structResult = TryParseStruct(trimmed, structs);
+        if (structResult != null) return structResult;
+
         throw new ArgumentException($"Unknown type: '{typeStr}'. " +
             "Available primitives: bool, int, long, float, double, string. " +
             "Support list<T>, map<K,V>.");
@@ -124,6 +133,17 @@ public sealed class FieldType
         {
             if (string.Equals(e.Name, name, StringComparison.OrdinalIgnoreCase))
                 return Enum(e.Name);
+        }
+        return null;
+    }
+
+    private static FieldType? TryParseStruct(string name, List<StructDefinition>? structs)
+    {
+        if (structs == null) return null;
+        foreach (var s in structs)
+        {
+            if (string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase))
+                return StructRef(s.Name, s);
         }
         return null;
     }
@@ -151,6 +171,7 @@ public sealed class FieldType
             FieldTypeKind.List => $"List<{ElementType!.ToCSharpType()}>",
             FieldTypeKind.Map => $"Dictionary<{KeyType!.ToCSharpType()},{ValueType!.ToCSharpType()}>",
             FieldTypeKind.Enum => EnumName!,
+            FieldTypeKind.Struct when StructName != null => StructName,
             FieldTypeKind.Struct => "object",
             FieldTypeKind.Custom => CustomDefinition?.CSharp ?? CustomTypeName ?? "object",
             _ => "object"
@@ -181,6 +202,7 @@ public sealed class FieldType
         FieldTypeKind.Map => $"map<{KeyType},{ValueType}>",
         FieldTypeKind.Enum => $"enum({EnumName})",
         FieldTypeKind.Custom => $"{CustomTypeName}({CustomDefinition?.Storage})",
+        FieldTypeKind.Struct when StructName != null => StructName,
         _ => Kind.ToString().ToLowerInvariant()
     };
 

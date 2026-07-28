@@ -10,20 +10,6 @@ using System.Text.Json.Serialization;
 
 namespace GameConfig
 {
-    /// <summary>Inline struct for ItemsStruct</summary>
-    public sealed class ItemsStruct
-    {
-        [JsonInclude]
-        public int ItemId { get; private set; } = 0;
-
-        [JsonInclude]
-        public int Count { get; private set; } = 0;
-
-        [JsonInclude]
-        public float Rate { get; private set; } = 0f;
-
-    }
-
     /// <summary>Reward definitions record</summary>
     public sealed class RewardRecord
     {
@@ -35,9 +21,9 @@ namespace GameConfig
         [JsonInclude]
         public string Description { get; private set; } = string.Empty;
 
-        /// <summary>List of reward items</summary>
+        /// <summary>List of reward items (refers to standalone struct RewardItem)</summary>
         [JsonInclude]
-        public List<ItemsStruct> Items { get; private set; } = new();
+        public List<RewardItem> Items { get; private set; } = new();
 
     }
 
