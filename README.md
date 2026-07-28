@@ -280,6 +280,21 @@ custom_types:
 | **生成样本** | `sample.bat` |
 | **完整命令** | `dotnet run --project src\TableTool.Cli -- build` |
 
+### 改默认输出路径
+
+不想每次都敲参数？直接改 `build.bat`：
+
+```bat
+@echo off
+chcp 65001 >nul
+cd /d "%~dp0"
+
+dotnet run --project src\TableTool.Cli -- build -o D:/MyGame/Config -n MyGame.Config %*
+pause
+```
+
+改了之后下次双击 `build.bat` 就直接输出到 `D:/MyGame/Config` 了。`%*` 是保留的手动传参，如果你临时想换个路径也能在后面加。
+
 ### 参数
 
 | 参数 | 默认值 | 说明 |
