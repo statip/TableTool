@@ -42,6 +42,79 @@ public sealed class ExcelReader
         }
     }
 
+    /// <summary>Build a TableDefinition by reading Excel headers (Row 1) and types (Row 2).
+    /// Used when no YAML schema is provided (Excel self-describing mode).</summary>
+    public TableDefinition? BuildTableDefinition(string xlsxPath, List<EnumDefinition> enums,
+        List<CustomTypeDefinition>? customTypes, List<StructDefinition>? structs)
+    {
+        try
+        {
+            using var workbook = new XLWorkbook(xlsxPath);
+            var ws = workbook.Worksheet(1);
+            var range = ws.RangeUsed();
+            if (range == null) return null;
+
+            var firstCol = range.Column(1).ColumnNumber();
+            var lastCol = range.LastColumnUsed().ColumnNumber();
+            var headerRow = range.Row(1);
+
+            var tableName = Path.GetFileNameWithoutExtension(xlsxPath);
+            var tableDef = new TableDefinition { Name = tableName, File = Path.GetFileName(xlsxPath) };
+            var pkList = new List<object>();
+
+            for (int col = firstCol; col <= lastCol; col++)
+            {
+                var raw = headerRow.Cell(col).GetString().Trim();
+                if (string.IsNullOrWhiteSpace(raw) || raw.StartsWith("##")) continue;
+
+                var info = ParseHeader(raw);
+                if (!info.HasValue) continue;
+
+                // Get type from Row 2
+                var typeRow = ws.Row(headerRow.RowNumber() + 1);
+                var typeStr = typeRow.Cell(col).GetString().Trim();
+                if (string.IsNullOrWhiteSpace(typeStr)) typeStr = "string";
+
+                var field = new FieldDefinition
+                {
+                    Name = info.FieldName,
+                    Type = typeStr,
+                    Comment = $"From Excel: {raw}",
+                };
+
+                if (info.HasForeignKey)
+                    field.Ref = $"{info.RefTable}.{info.RefField}";
+
+                // Parse type
+                try
+                {
+                    field.ParsedType = FieldType.Parse(typeStr, enums, customTypes, structs);
+                }
+                catch
+                {
+                    field.ParsedType = FieldType.String();
+                }
+
+                tableDef.Fields.Add(field);
+
+                if (info.IsPrimaryKey)
+                    pkList.Add(info.FieldName);
+            }
+
+            // Set primary key
+            if (pkList.Count == 1)
+                tableDef.PrimaryKey = pkList[0].ToString();
+            else if (pkList.Count > 1)
+                tableDef.PrimaryKey = pkList;
+
+            return tableDef;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     /// <summary>Parse header cell to extract field name and annotations.</summary>
     internal static HeaderInfo ParseHeader(string raw)
     {

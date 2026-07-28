@@ -84,18 +84,18 @@ namespace GameConfig
         private static DataLoader _loader = new();
         private static bool _loaded;
 
-        private static Lazy<ItemCategoryTable> _itemCategory = new(() => _loader.Load<ItemCategoryTable, int, ItemCategoryRecord>("ItemCategory"));
-
         private static Lazy<ItemTable> _item = new(() => _loader.Load<ItemTable, int, ItemRecord>("Item"));
 
-        private static Lazy<SkillTable> _skill = new(() => _loader.Load<SkillTable, SkillKey, SkillRecord>("Skill"));
+        private static Lazy<ItemCategoryTable> _itemCategory = new(() => _loader.Load<ItemCategoryTable, int, ItemCategoryRecord>("ItemCategory"));
 
         private static Lazy<RewardTable> _reward = new(() => _loader.Load<RewardTable, int, RewardRecord>("Reward"));
 
-        public static ItemCategoryTable ItemCategory => _itemCategory.Value;
+        private static Lazy<SkillTable> _skill = new(() => _loader.Load<SkillTable, SkillKey, SkillRecord>("Skill"));
+
         public static ItemTable Item => _item.Value;
-        public static SkillTable Skill => _skill.Value;
+        public static ItemCategoryTable ItemCategory => _itemCategory.Value;
         public static RewardTable Reward => _reward.Value;
+        public static SkillTable Skill => _skill.Value;
 
         /// <summary>Directory where JSON data files are located.</summary>
         public static string DataPath
@@ -108,20 +108,20 @@ namespace GameConfig
         public static void LoadAll()
         {
             if (_loaded) return;
-            _ = ItemCategory;
             _ = Item;
-            _ = Skill;
+            _ = ItemCategory;
             _ = Reward;
+            _ = Skill;
             _loaded = true;
         }
 
         /// <summary>Reload all tables.</summary>
         public static void ReloadAll()
         {
-            _itemCategory = new(() => _loader.Load<ItemCategoryTable, int, ItemCategoryRecord>("ItemCategory"));
             _item = new(() => _loader.Load<ItemTable, int, ItemRecord>("Item"));
-            _skill = new(() => _loader.Load<SkillTable, SkillKey, SkillRecord>("Skill"));
+            _itemCategory = new(() => _loader.Load<ItemCategoryTable, int, ItemCategoryRecord>("ItemCategory"));
             _reward = new(() => _loader.Load<RewardTable, int, RewardRecord>("Reward"));
+            _skill = new(() => _loader.Load<SkillTable, SkillKey, SkillRecord>("Skill"));
             _loaded = false;
             LoadAll();
         }

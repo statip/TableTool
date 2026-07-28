@@ -10,24 +10,24 @@ using System.Text.Json.Serialization;
 
 namespace GameConfig
 {
-    /// <summary>Item category definitions record</summary>
+    /// <summary>ItemCategory record</summary>
     public sealed class ItemCategoryRecord
     {
-        /// <summary>Category unique ID</summary>
+        /// <summary>From Excel: #Id</summary>
         [JsonInclude]
         public int Id { get; private set; } = 0;
 
-        /// <summary>Category name</summary>
+        /// <summary>From Excel: Name</summary>
         [JsonInclude]
         public string Name { get; private set; } = string.Empty;
 
-        /// <summary>Icon file name</summary>
+        /// <summary>From Excel: Icon</summary>
         [JsonInclude]
         public string Icon { get; private set; } = string.Empty;
 
     }
 
-    /// <summary>Item category definitions table</summary>
+    /// <summary>ItemCategory table</summary>
     public sealed class ItemCategoryTable : IDataTable<int, ItemCategoryRecord>
     {
         private Dictionary<int, ItemCategoryRecord> _data = new();

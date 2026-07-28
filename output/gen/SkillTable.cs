@@ -10,30 +10,30 @@ using System.Text.Json.Serialization;
 
 namespace GameConfig
 {
-    /// <summary>Skill definitions with level variants record</summary>
+    /// <summary>Skill record</summary>
     public sealed class SkillRecord
     {
-        /// <summary>Skill ID</summary>
+        /// <summary>From Excel: #Id</summary>
         [JsonInclude]
         public int Id { get; private set; } = 0;
 
-        /// <summary>Skill level</summary>
+        /// <summary>From Excel: #Level</summary>
         [JsonInclude]
         public int Level { get; private set; } = 0;
 
-        /// <summary>Skill display name</summary>
+        /// <summary>From Excel: Name</summary>
         [JsonInclude]
         public string Name { get; private set; } = string.Empty;
 
-        /// <summary>Skill description</summary>
+        /// <summary>From Excel: Description</summary>
         [JsonInclude]
         public string Description { get; private set; } = string.Empty;
 
-        /// <summary>MP cost</summary>
+        /// <summary>From Excel: Cost</summary>
         [JsonInclude]
         public float Cost { get; private set; } = 0f;
 
-        /// <summary>Element type (enum)</summary>
+        /// <summary>From Excel: Element</summary>
         [JsonInclude]
         public ElementType Element { get; private set; } = default;
 
@@ -73,7 +73,7 @@ namespace GameConfig
         public override bool Equals(object? obj) => obj is SkillKey other && Equals(other);
     }
 
-    /// <summary>Skill definitions with level variants table</summary>
+    /// <summary>Skill table</summary>
     public sealed class SkillTable : IDataTable<SkillKey, SkillRecord>
     {
         private Dictionary<SkillKey, SkillRecord> _data = new();

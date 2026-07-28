@@ -10,36 +10,36 @@ using System.Text.Json.Serialization;
 
 namespace GameConfig
 {
-    /// <summary>Item master data record</summary>
+    /// <summary>Item record</summary>
     public sealed class ItemRecord
     {
-        /// <summary>Item unique ID</summary>
+        /// <summary>From Excel: #Id</summary>
         [JsonInclude]
         public int Id { get; private set; } = 0;
 
-        /// <summary>Display name</summary>
+        /// <summary>From Excel: Name</summary>
         [JsonInclude]
         public string Name { get; private set; } = string.Empty;
 
-        /// <summary>Buy price in gold</summary>
+        /// <summary>From Excel: Price</summary>
         [JsonInclude]
         public int Price { get; private set; } = 0;
 
-        /// <summary>Item category ID (FK → ItemCategory.Id)</summary>
+        /// <summary>From Excel: Category#ref=ItemCategory.Id</summary>
         [JsonInclude]
         public int Category { get; private set; } = 0;
 
-        /// <summary>Search tags</summary>
+        /// <summary>From Excel: Tags</summary>
         [JsonInclude]
         public List<string> Tags { get; private set; } = new();
 
-        /// <summary>Attribute bonuses (e.g. atk:10, def:5)</summary>
+        /// <summary>From Excel: Attributes</summary>
         [JsonInclude]
         public Dictionary<string,int> Attributes { get; private set; } = new();
 
     }
 
-    /// <summary>Item master data table</summary>
+    /// <summary>Item table</summary>
     public sealed class ItemTable : IDataTable<int, ItemRecord>
     {
         private Dictionary<int, ItemRecord> _data = new();

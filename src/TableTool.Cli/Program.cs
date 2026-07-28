@@ -9,7 +9,7 @@ public static class Program
     {
         try
         {
-            var schemaPath = "schema/tables.yaml";
+            var schemaPath = "schema/types.yaml";   // 可选，没有也行
             var excelDir = "excel/";
             var outputDir = "output/";
             var dataDir = "data";
@@ -94,12 +94,12 @@ public static class Program
         Console.WriteLine("  TableTool.Cli <command> [options]");
         Console.WriteLine();
         Console.WriteLine("Commands:");
-        Console.WriteLine("  build           Run the full build pipeline (schema → parse → validate → export → codegen)");
+        Console.WriteLine("  build           Run the full build pipeline (excel → validate → export → codegen)");
         Console.WriteLine("  sample          Generate sample Excel files for testing");
         Console.WriteLine();
         Console.WriteLine("Build Options:");
-        Console.WriteLine("  --schema, -s <path>     Schema definition file (YAML)     [default: schema/tables.yaml]");
         Console.WriteLine("  --excel, -e <dir>       Input directory for .xlsx files    [default: excel/]");
+        Console.WriteLine("  --schema, -s <path>     Types definition file (optional)   [default: schema/types.yaml]");
         Console.WriteLine("  --output, -o <dir>      Output directory                   [default: output/]");
         Console.WriteLine("  --data, -d <dir>        JSON data subdirectory             [default: data]");
         Console.WriteLine("  --gen, -g <dir>         C# code subdirectory               [default: gen]");
@@ -109,9 +109,9 @@ public static class Program
         Console.WriteLine();
         Console.WriteLine("Examples:");
         Console.WriteLine("  TableTool.Cli sample");
-        Console.WriteLine("  TableTool.Cli build");
-        Console.WriteLine("  TableTool.Cli build --schema config/schema.yaml --excel xlsx/ --output ../GameProject/Config");
-        Console.WriteLine("  TableTool.Cli build --namespace MyGame.Config");
+        Console.WriteLine("  TableTool.Cli build                                       (Excel 自描述模式)");
+        Console.WriteLine("  TableTool.Cli build --schema schema/types.yaml            (带类型定义)");
+        Console.WriteLine("  TableTool.Cli build --excel xlsx/ --output ../GameProject/Config");
     }
 
     private static void PrintVersion()

@@ -34,43 +34,90 @@ public sealed class BuildCommand
         _namespace = ns;
     }
 
-    /// <summary>Execute the build pipeline: schema → parse → validate → export → codegen.</summary>
     public int Execute()
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
         Console.WriteLine($"TableTool Build - {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         Console.WriteLine(new string('-', 60));
 
-        // Step 1: Load schema
-        Console.Write("Loading schema... ");
-        var schemaLoader = new SchemaLoader();
-        var schemaResult = schemaLoader.Load(_schemaPath);
-        if (!schemaResult.Success)
+        // Step 1: Load types (optional schema/types.yaml)
+        var enums = new List<EnumDefinition>();
+        var customTypes = new List<CustomTypeDefinition>();
+        var structDefs = new List<StructDefinition>();
+        var externDefs = new List<StructDefinition>();
+
+        if (File.Exists(_schemaPath))
         {
-            Console.WriteLine("FAILED");
-            foreach (var err in schemaResult.Errors)
-                Console.Error.WriteLine($"  [ERROR] {err}");
+            var schemaLoader = new SchemaLoader();
+            var schemaResult = schemaLoader.LoadTypes(_schemaPath);
+            if (!schemaResult.Success)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                foreach (var err in schemaResult.Errors)
+                    Console.Error.WriteLine($"  [ERROR] {err}");
+                Console.ResetColor();
+                return 1;
+            }
+            enums = schemaResult.Enums;
+            customTypes = schemaResult.CustomTypes;
+            structDefs = schemaResult.Structs;
+            externDefs = schemaResult.ExternTypes;
+            Console.WriteLine($"Types loaded: {enums.Count} enums, {customTypes.Count} custom, {structDefs.Count} structs, {externDefs.Count} extern");
+        }
+        else
+        {
+            Console.WriteLine("No types.yaml found — using Excel self-describing mode");
+        }
+
+        var allStructs = new List<StructDefinition>();
+        allStructs.AddRange(structDefs);
+        allStructs.AddRange(externDefs);
+
+        // Step 2: Discover tables from Excel files
+        if (!Directory.Exists(_excelDir))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine($"Excel directory not found: {_excelDir}");
+            Console.ResetColor();
             return 1;
         }
-        Console.WriteLine($"OK ({schemaResult.Document!.Tables.Count} tables, {schemaResult.Enums.Count} enums)");
 
-        foreach (var t in schemaResult.Document.Tables)
+        var xlsxFiles = Directory.GetFiles(_excelDir, "*.xlsx").OrderBy(f => f).ToList();
+        if (xlsxFiles.Count == 0)
         {
-            Console.WriteLine($"  DEBUG: Table '{t.Name}' PK type={t.PrimaryKey?.GetType().Name ?? "null"}, value={t.PrimaryKey}, IsListMode={t.IsListMode}");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine($"No .xlsx files found in '{_excelDir}'");
+            Console.ResetColor();
+            return 1;
         }
 
-        // Step 2: Parse Excel files
+        Console.WriteLine($"Found {xlsxFiles.Count} Excel files");
+
+        // Step 3: Parse Excel files into DataModel
         Console.WriteLine("\nParsing Excel files...");
-        var dataModel = new DataModel(schemaResult.Enums);
+        var dataModel = new DataModel(enums);
         var reader = new ExcelReader();
+        var tableDefs = new List<TableDefinition>();
         bool hasParseErrors = false;
 
-        foreach (var tableDef in schemaResult.Document.Tables)
+        foreach (var xlsxPath in xlsxFiles)
         {
-            Console.Write($"  {tableDef.Name} ({tableDef.File})... ");
-            var result = reader.ReadTable(tableDef, _excelDir, schemaResult.Enums,
-                schemaResult.Document.CustomTypes, schemaResult.Document.AllStructs);
+            var fileName = Path.GetFileName(xlsxPath);
+            var tableName = Path.GetFileNameWithoutExtension(xlsxPath);
 
+            Console.Write($"  {tableName} ({fileName})... ");
+
+            // Build TableDefinition from Excel headers
+            var tableDef = reader.BuildTableDefinition(xlsxPath, enums, customTypes, allStructs);
+            if (tableDef == null)
+            {
+                Console.WriteLine("FAILED (cannot parse headers)");
+                hasParseErrors = true;
+                continue;
+            }
+            tableDef.File = fileName;
+
+            var result = reader.ReadTable(tableDef, _excelDir, enums, customTypes, allStructs);
             if (!result.Success)
             {
                 Console.WriteLine("FAILED");
@@ -80,21 +127,15 @@ public sealed class BuildCommand
                 continue;
             }
 
-            if (result.Errors.Count > 0)
-            {
-                Console.WriteLine($"OK ({result.DataTable!.Rows.Count} rows, {result.Errors.Count} warnings)");
-                foreach (var err in result.Errors)
-                    Console.WriteLine($"    [WARN] {err}");
-            }
-            else
-            {
-                Console.WriteLine($"OK ({result.DataTable!.Rows.Count} rows)");
-            }
-
-            dataModel.AddTable(result.DataTable);
+            Console.WriteLine(result.Errors.Count > 0
+                ? $"OK ({result.DataTable!.Rows.Count} rows, {result.Errors.Count} warnings)"
+                : $"OK ({result.DataTable!.Rows.Count} rows)");
 
             foreach (var warn in result.Warnings)
                 Console.WriteLine($"    [WARN] {warn}");
+
+            dataModel.AddTable(result.DataTable!);
+            tableDefs.Add(tableDef);
         }
 
         if (hasParseErrors)
@@ -105,10 +146,10 @@ public sealed class BuildCommand
             return 1;
         }
 
-        // Step 3: Validate
+        // Step 4: Validate
         Console.WriteLine("\nValidating data...");
         var validator = new SchemaValidator();
-        var validationResult = validator.Validate(dataModel, schemaResult.Document.AllStructs);
+        var validationResult = validator.Validate(dataModel, allStructs);
 
         if (!validationResult.IsValid)
         {
@@ -124,7 +165,7 @@ public sealed class BuildCommand
         }
         Console.WriteLine("  All validations passed.");
 
-        // Clean output directories
+        // Clean output dirs
         var outputDataPath = Path.Combine(_outputDir, _dataDir);
         var outputGenPath = Path.Combine(_outputDir, _genDir);
         if (Directory.Exists(outputDataPath)) Directory.Delete(outputDataPath, true);
@@ -132,60 +173,56 @@ public sealed class BuildCommand
         Directory.CreateDirectory(outputDataPath);
         Directory.CreateDirectory(outputGenPath);
 
-        // Step 4: Export JSON
+        // Step 5: Export JSON
         Console.WriteLine("\nExporting JSON...");
         var exporter = new JsonExporter();
         var exportResult = exporter.Export(dataModel, outputDataPath);
 
         if (!exportResult.Success)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("FAILED");
             foreach (var err in exportResult.Errors)
                 Console.Error.WriteLine($"  [ERROR] {err}");
+            Console.ResetColor();
             return 1;
         }
 
-        Console.WriteLine($"  {exportResult.FilesWritten.Count} JSON files written to '{outputDataPath}'");
+        Console.WriteLine($"  {exportResult.FilesWritten.Count} JSON files");
         foreach (var file in exportResult.FilesWritten)
         {
             var fi = new FileInfo(file);
             Console.WriteLine($"    {fi.Name} ({fi.Length} bytes)");
         }
 
-        // Step 5: Generate C# code
+        // Step 6: Generate C# code
         Console.WriteLine("\nGenerating C# code...");
         var classGenerator = new CSharpClassGenerator(_namespace);
         var tablesGenerator = new TablesGenerator(_namespace);
         int genFileCount = 0;
 
-        // Generate per-table files
-        foreach (var tableDef in schemaResult.Document.Tables)
+        foreach (var tableDef in tableDefs)
         {
-            var code = classGenerator.Generate(tableDef, schemaResult.Enums);
+            var code = classGenerator.Generate(tableDef, enums);
             var fileName = $"{CSharpClassGenerator.GetTableClassName(tableDef.Name)}.cs";
-            var filePath = Path.Combine(outputGenPath, fileName);
-            File.WriteAllText(filePath, code);
+            File.WriteAllText(Path.Combine(outputGenPath, fileName), code);
             genFileCount++;
             Console.WriteLine($"  {fileName}");
         }
 
-        // Generate Tables.cs (with custom type converters)
-        var tablesCode = tablesGenerator.Generate(schemaResult.Document.Tables, schemaResult.Enums,
-            schemaResult.Document.CustomTypes);
-        var tablesFilePath = Path.Combine(outputGenPath, "Tables.cs");
-        File.WriteAllText(tablesFilePath, tablesCode);
+        // Tables.cs
+        var tablesCode = tablesGenerator.Generate(tableDefs, enums, customTypes);
+        File.WriteAllText(Path.Combine(outputGenPath, "Tables.cs"), tablesCode);
         genFileCount++;
         Console.WriteLine("  Tables.cs");
 
-        // Generate standalone struct files (only if generate_code: true)
-        var structsToGen = (schemaResult.Document.Structs ?? new())
-            .Where(s => s.GenerateCode).ToList();
+        // Standalone structs (generate_code: true)
+        var structsToGen = structDefs.Where(s => s.GenerateCode).ToList();
         foreach (var st in structsToGen)
         {
             var code = classGenerator.GenerateStruct(st, _namespace);
             var fileName = $"{st.Name}.cs";
-            var filePath = Path.Combine(outputGenPath, fileName);
-            File.WriteAllText(filePath, code);
+            File.WriteAllText(Path.Combine(outputGenPath, fileName), code);
             genFileCount++;
             Console.WriteLine($"  {fileName}");
         }

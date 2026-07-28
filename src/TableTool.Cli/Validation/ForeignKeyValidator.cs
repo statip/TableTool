@@ -49,12 +49,14 @@ public sealed class ForeignKeyValidator
                 var refTable = model.GetTable(refTableName);
                 if (refTable == null)
                 {
+                    var where = st.GenerateCode ? "struct" : "extern_type";
                     errors.Add(new ValidationError
                     {
-                        TableName = $"struct {st.Name}",
+                        TableName = $"{where} {st.Name}",
                         Field = field.Name,
                         Value = field.Ref,
-                        Message = $"FK in struct '{st.Name}': referenced table '{refTableName}' not found.",
+                        Message = $"FK 引用的表 '{refTableName}' 不存在！\n" +
+                                   $"  → 去 {where} '{st.Name}' 的 fields 里删掉 {field.Name} 这一行，或者删掉 ref: {field.Ref}",
                         Severity = ErrorSeverity.Error,
                     });
                     continue;
@@ -155,7 +157,8 @@ public sealed class ForeignKeyValidator
                 TableName = tableName,
                 Field = fieldName,
                 Value = refStr,
-                Message = $"Referenced table '{refTableName}' not found. Ref: {refStr}",
+                Message = $"引用的表 '{refTableName}' 不存在！\n" +
+                           $"  → 表 '{tableName}' 的字段 '{fieldName}' 有 ref: {refStr}，删掉这行 ref 或恢复此表",
                 Severity = ErrorSeverity.Error,
             });
             return errors;

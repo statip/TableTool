@@ -10,24 +10,24 @@ using System.Text.Json.Serialization;
 
 namespace GameConfig
 {
-    /// <summary>Reward definitions record</summary>
+    /// <summary>Reward record</summary>
     public sealed class RewardRecord
     {
-        /// <summary>Reward ID</summary>
+        /// <summary>From Excel: #Id</summary>
         [JsonInclude]
         public int Id { get; private set; } = 0;
 
-        /// <summary>Reward description</summary>
+        /// <summary>From Excel: Description</summary>
         [JsonInclude]
         public string Description { get; private set; } = string.Empty;
 
-        /// <summary>List of reward items (refers to standalone struct RewardItem)</summary>
+        /// <summary>From Excel: Items</summary>
         [JsonInclude]
-        public List<RewardItem> Items { get; private set; } = new();
+        public List<object> Items { get; private set; } = new();
 
     }
 
-    /// <summary>Reward definitions table</summary>
+    /// <summary>Reward table</summary>
     public sealed class RewardTable : IDataTable<int, RewardRecord>
     {
         private Dictionary<int, RewardRecord> _data = new();
