@@ -13,15 +13,15 @@ namespace GameConfig
     /// <summary>RewardItem</summary>
     public sealed class RewardItem
     {
-        /// <summary>Item ID (FK → Item.Id)</summary>
+        /// <summary>ItemId</summary>
         [JsonInclude]
         public int ItemId { get; private set; } = 0;
 
-        /// <summary>Item count</summary>
+        /// <summary>Count</summary>
         [JsonInclude]
         public int Count { get; private set; } = 0;
 
-        /// <summary>Drop rate</summary>
+        /// <summary>Rate</summary>
         [JsonInclude]
         public float Rate { get; private set; } = 0f;
 
