@@ -164,13 +164,16 @@ public sealed class BuildCommand
         }
         Console.WriteLine("  All validations passed.");
 
-        // Clean output dirs
+        // Clean output dirs (but preserve TableSettings.cs)
         var outputDataPath = Path.Combine(_outputDir, _dataDir);
         var outputGenPath = Path.Combine(_outputDir, _genDir);
+        var oldSettingsPath = Path.Combine(outputGenPath, "TableSettings.cs");
+        string? oldSettings = File.Exists(oldSettingsPath) ? File.ReadAllText(oldSettingsPath) : null;
         if (Directory.Exists(outputDataPath)) Directory.Delete(outputDataPath, true);
         if (Directory.Exists(outputGenPath)) Directory.Delete(outputGenPath, true);
         Directory.CreateDirectory(outputDataPath);
         Directory.CreateDirectory(outputGenPath);
+        if (oldSettings != null) File.WriteAllText(oldSettingsPath, oldSettings);
 
         // Step 5: Export JSON
         Console.WriteLine("\nExporting JSON...");
@@ -227,6 +230,16 @@ public sealed class BuildCommand
         }
         if (structsToGen.Count > 0)
             Console.WriteLine($"  ({structsToGen.Count} standalone structs)");
+
+        // Generate TableSettings.cs (only once, not overwritten)
+        var settingsPath = Path.Combine(outputGenPath, "TableSettings.cs");
+        if (!File.Exists(settingsPath))
+        {
+            var settingsCode = tablesGenerator.GenerateSettings(_namespace);
+            File.WriteAllText(settingsPath, settingsCode);
+            genFileCount++;
+            Console.WriteLine("  TableSettings.cs (first time only)");
+        }
 
         sw.Stop();
         Console.WriteLine(new string('-', 60));

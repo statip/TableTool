@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -112,6 +111,12 @@ namespace GameConfig
         {
             get => _loader.DataPath;
             set => _loader.DataPath = value;
+        }
+
+        /// <summary>Load settings from TableSettings (auto on first access).</summary>
+        static Tables()
+        {
+            _loader.DataPath = TableSettings.DataPath;
         }
 
         /// <summary>Load all tables eagerly.</summary>

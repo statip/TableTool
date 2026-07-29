@@ -41,7 +41,11 @@ C:\Project\TableTool/
 ├── excel/*.xlsx                    # ★ 你的 Excel 放这里，表头就是 schema
 ├── output/
 │   ├── data/*.json                 #   JSON 数据
-│   └── gen/*.cs                    #   C# 代码
+│   └── gen/
+│       ├── Tables.cs               #   生成的代码（每次覆盖）
+│       ├── TableSettings.cs        #   ★ 配置路径（仅第一次生成，不会被覆盖）
+│       ├── ItemTable.cs            #   每张表一个文件
+│       └── ...
 └── README.md
 ```
 
@@ -198,15 +202,24 @@ dotnet run --project src\TableTool.Cli -- build -o D:/MyGame/Config -n MyGame.Co
 
 ### 加引用
 
-把 `output/gen/*.cs` 加到你的 C# 项目，引用 `src/TableTool.Runtime/`。
+把 `output/gen/*.cs` 加到你的 C# 项目。
 
 ### 初始化
+
+第一次构建会自动生成 `TableSettings.cs`，打开它，把 `DataPath` 改成你的 JSON 目录：
+
+```csharp
+// TableSettings.cs — 改这一个地方就行，重建不会被覆盖
+public static string DataPath = "./output/data";  // 改成你的路径
+```
+
+然后在项目里直接查：
 
 ```csharp
 using GameConfig;
 
-Tables.DataPath = "./output/data";     // JSON 文件路径
-Tables.LoadAll();                      // 预加载（不调也行，懒加载）
+// 不需要设 DataPath，Tables 启动时自动读 TableSettings
+Tables.LoadAll();   // 预加载（不调也行，懒加载）
 ```
 
 ### 查数据
