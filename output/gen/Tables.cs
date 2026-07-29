@@ -4,15 +4,41 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Globalization;
-using TableTool.Runtime;
-
 
 namespace GameConfig
 {
+    /// <summary>Generic interface for a typed data table.</summary>
+    public interface IDataTable<TKey, TRecord>
+        where TKey : notnull
+        where TRecord : class
+    {
+        TRecord Get(TKey key);
+        TRecord? TryGet(TKey key);
+        bool ContainsKey(TKey key);
+        IReadOnlyCollection<TRecord> GetAll();
+        IReadOnlyCollection<TKey> GetAllKeys();
+        int Count { get; }
+    }
+
+    /// <summary>JsonConverter for custom type DateTime (storage: string, csharp: )</summary>
+    internal class DateTimeConverter : JsonConverter<>
+    {
+        public override  Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var str = reader.GetString();
+            return System.DateTime.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        public override void Write(Utf8JsonWriter writer,  value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString());
+        }
+    }
+
     /// <summary>Handles deserialization of JSON data files into table classes.</summary>
     internal class DataLoader
     {

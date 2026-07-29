@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace GameConfig
@@ -35,7 +34,7 @@ namespace GameConfig
 
         /// <summary>From Excel: Element</summary>
         [JsonInclude]
-        public string Element { get; private set; } = string.Empty;
+        public ElementType Element { get; private set; } = default;
 
     }
 

@@ -25,7 +25,6 @@ public sealed class CSharpClassGenerator
         sb.AppendLine();
         sb.AppendLine("using System;");
         sb.AppendLine("using System.Collections.Generic;");
-        sb.AppendLine("using System.Text.Json;");
         sb.AppendLine("using System.Text.Json.Serialization;");
         sb.AppendLine();
         sb.AppendLine($"namespace {_namespace}");
@@ -322,7 +321,6 @@ public sealed class CSharpClassGenerator
         sb.AppendLine();
         sb.AppendLine("using System;");
         sb.AppendLine("using System.Collections.Generic;");
-        sb.AppendLine("using System.Text.Json;");
         sb.AppendLine("using System.Text.Json.Serialization;");
         sb.AppendLine();
         sb.AppendLine($"namespace {ns}");
