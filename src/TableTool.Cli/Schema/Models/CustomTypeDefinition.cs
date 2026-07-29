@@ -1,3 +1,5 @@
+using YamlDotNet.Serialization;
+
 namespace TableTool.Cli.Schema.Models;
 
 /// <summary>Definition of a user-defined custom type.</summary>
@@ -10,6 +12,7 @@ public sealed class CustomTypeDefinition
     public string Storage { get; set; } = "string";
 
     /// <summary>C# type to use in generated code (e.g. "System.DateTime", "UnityEngine.Vector3").</summary>
+    [YamlMember(Alias = "csharp")]
     public string CSharp { get; set; } = string.Empty;
 
     /// <summary>Expression to parse storage value into custom type. {0} = raw string from JSON.</summary>

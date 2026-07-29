@@ -24,16 +24,16 @@ namespace GameConfig
         int Count { get; }
     }
 
-    /// <summary>JsonConverter for custom type DateTime (storage: string, csharp: )</summary>
-    internal class DateTimeConverter : JsonConverter<>
+    /// <summary>JsonConverter for custom type DateTime (storage: string, csharp: System.DateTime)</summary>
+    internal class DateTimeConverter : JsonConverter<System.DateTime>
     {
-        public override  Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override System.DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var str = reader.GetString();
             return System.DateTime.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
         }
 
-        public override void Write(Utf8JsonWriter writer,  value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, System.DateTime value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToString());
         }
