@@ -48,25 +48,24 @@ public sealed class BuildCommand
 
         if (File.Exists(_schemaPath))
         {
-            var schemaLoader = new SchemaLoader();
-            var schemaResult = schemaLoader.LoadTypes(_schemaPath);
-            if (!schemaResult.Success)
+            var fi = new FileInfo(_schemaPath);
+            if (fi.Length > 0)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                foreach (var err in schemaResult.Errors)
-                    Console.Error.WriteLine($"  [ERROR] {err}");
-                Console.ResetColor();
-                return 1;
+                var schemaLoader = new SchemaLoader();
+                var schemaResult = schemaLoader.LoadTypes(_schemaPath);
+                if (schemaResult.Success)
+                {
+                    enums = schemaResult.Enums;
+                    customTypes = schemaResult.CustomTypes;
+                    structDefs = schemaResult.Structs;
+                    externDefs = schemaResult.ExternTypes;
+                    Console.WriteLine($"Types: {enums.Count} enums, {customTypes.Count} custom, {structDefs.Count} structs, {externDefs.Count} extern");
+                }
             }
-            enums = schemaResult.Enums;
-            customTypes = schemaResult.CustomTypes;
-            structDefs = schemaResult.Structs;
-            externDefs = schemaResult.ExternTypes;
-            Console.WriteLine($"Types loaded: {enums.Count} enums, {customTypes.Count} custom, {structDefs.Count} structs, {externDefs.Count} extern");
         }
-        else
+        else if (!File.Exists(_schemaPath))
         {
-            Console.WriteLine("No types.yaml found — using Excel self-describing mode");
+            Console.WriteLine("No types.yaml");
         }
 
         var allStructs = new List<StructDefinition>();

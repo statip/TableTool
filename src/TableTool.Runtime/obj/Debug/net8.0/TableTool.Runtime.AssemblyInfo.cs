@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TableTool.Runtime")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+237bdae0d076b91b73b5f83e95b14cc316d32287")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb104bec1568556d349ab28afa0808ec9bf9525b")]
 [assembly: System.Reflection.AssemblyProductAttribute("TableTool.Runtime")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TableTool.Runtime")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

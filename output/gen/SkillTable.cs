@@ -35,7 +35,7 @@ namespace GameConfig
 
         /// <summary>From Excel: Element</summary>
         [JsonInclude]
-        public ElementType Element { get; private set; } = default;
+        public string Element { get; private set; } = string.Empty;
 
     }
 
